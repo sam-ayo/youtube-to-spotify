@@ -1,18 +1,17 @@
 use serde::{Deserialize, Serialize};
-#[derive(Serialize, Deserialize, Debug)]
 
-pub struct YoutubePlaylistItem {
-    pub snippet: Snippet,
-}
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Snippet {
-    pub title: String,
-    pub description: String,
+    title: String,
+    description: String,
 }
-
+#[derive(Serialize, Deserialize, Debug)]
+pub struct YoutubePlaylistItem {
+    snippet: Snippet,
+}
 #[derive(Serialize, Deserialize, Debug)]
 pub struct YoutubePlaylistItems {
-    pub items: Vec<YoutubePlaylistItem>,
+    items: Vec<YoutubePlaylistItem>,
 }
 
 impl YoutubePlaylistItems {
