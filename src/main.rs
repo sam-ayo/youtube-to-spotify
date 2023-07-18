@@ -2,6 +2,8 @@ use base64::{engine::general_purpose, Engine as _};
 use dotenv::dotenv;
 use rocket::{http::uri::Origin, response::Redirect};
 use serde::{Deserialize, Serialize};
+use youtube_to_spotify::spotify::Track;
+use youtube_to_spotify::youtube;
 
 #[macro_use]
 extern crate rocket;
@@ -34,7 +36,7 @@ fn get_redirect_uri() -> String {
 
 #[get("/login")]
 fn index() -> Redirect {
-    let scope = "playlist-modify-private";
+    let scope = "playlist-modify-private%20playlist-modify-public";
     let client_id = get_client_id();
     let redirect_uri = get_redirect_uri();
 
@@ -82,6 +84,7 @@ async fn callback(uri: &Origin<'_>) -> String {
         Ok(res) => res.text().await.unwrap(),
         Err(e) => panic!("Could not connect to /api/token: {e}"),
     };
+
     response
 }
 
