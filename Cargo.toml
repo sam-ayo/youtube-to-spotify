@@ -16,5 +16,5 @@ dotenv_codegen = "0.15.0"
 rocket = { version = "=0.5.0-rc.3", features = ["json"]}
 base64 = "0.21.2"
 serde_urlencoded = "0.7.1"
-
+rocket_contrib = "0.4"
 

@@ -1,9 +1,8 @@
 use base64::{engine::general_purpose, Engine as _};
 use dotenv::dotenv;
+use rocket::serde::json::Json;
 use rocket::{http::uri::Origin, response::Redirect};
 use serde::{Deserialize, Serialize};
-use youtube_to_spotify::spotify::Track;
-use youtube_to_spotify::youtube;
 
 #[macro_use]
 extern crate rocket;
@@ -26,6 +25,7 @@ fn get_client_secret() -> String {
     };
     client_secret
 }
+
 fn get_redirect_uri() -> String {
     let redirect_uri: String = match std::env::var("REDIRECT_URI") {
         Ok(uri) => uri,
@@ -52,8 +52,20 @@ struct AccessTokenRequest<'a> {
     redirect_uri: &'a str,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(crate = "rocket::serde")]
+struct OAuthResponse {
+    access_token: String,
+    token_type: String,
+    expires_in: u16,
+    refresh_token: String,
+    scope: String,
+}
+
+use std::error::Error;
+
 #[get("/callback")]
-async fn callback(uri: &Origin<'_>) -> String {
+async fn callback(uri: &Origin<'_>) -> Json<OAuthResponse> {
     let query: Vec<_> = uri.query().unwrap().segments().collect();
     let code = query[0].1;
 
@@ -78,14 +90,11 @@ async fn callback(uri: &Origin<'_>) -> String {
         )
         .body(data_to_send)
         .send()
-        .await;
+        .await
+        .unwrap();
 
-    let response = match response_result {
-        Ok(res) => res.text().await.unwrap(),
-        Err(e) => panic!("Could not connect to /api/token: {e}"),
-    };
-
-    response
+    let result = response_result.json::<OAuthResponse>().await.unwrap();
+    return Json(result);
 }
 
 #[launch]

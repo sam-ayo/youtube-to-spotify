@@ -26,6 +26,7 @@ pub fn get_url() -> Result<String, Box<dyn std::error::Error>> {
     dotenv::dotenv().ok();
     let url = match std::env::var("YOUTUBE_URL") {
         Ok(url) => url,
+
         Err(e) => format!("{e}"),
     };
     Ok(url)
