@@ -3,6 +3,7 @@ use crate::client::{get_client_id, get_client_secret, get_redirect_uri};
 use base64::{engine::general_purpose, Engine as _};
 use rocket::serde::json::Json;
 use rocket::{http::uri::Origin, response::Redirect, Route};
+use youtube_to_spotify::spotify::search::spotify_track_search;
 
 const BASE: &str = "https://accounts.spotify.com";
 
@@ -46,7 +47,10 @@ pub async fn callback(uri: &Origin<'_>) -> Json<OAuthResponse> {
         .await
         .unwrap();
 
+    println!("{:?}", response_result);
+
     let result = response_result.json::<OAuthResponse>().await.unwrap();
+    let track = spotify_track_search(&result.access_token, "Joro");
     return Json(result);
 }
 
