@@ -62,8 +62,6 @@ struct OAuthResponse {
     scope: String,
 }
 
-use std::error::Error;
-
 #[get("/callback")]
 async fn callback(uri: &Origin<'_>) -> Json<OAuthResponse> {
     let query: Vec<_> = uri.query().unwrap().segments().collect();
